@@ -4,8 +4,8 @@ import sys
 import cv2
 import numpy as np
 import pickle
-IMG_PATH = '../input/coco-2017-dataset/coco2017/val2017/'
-ANN_PATH = '../input/coco-2017-dataset/coco2017/annotations/instances_val2017.json'
+IMG_PATH = '../../input/coco-2017-dataset/coco2017/val2017/'
+ANN_PATH = '../../input/coco-2017-dataset/coco2017/annotations/instances_val2017.json'
 DEBUG = True
 
 def _coco_box_to_bbox(box):
