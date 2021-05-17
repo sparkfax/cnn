@@ -92,7 +92,7 @@ if __name__ == '__main__':
     img_info = coco.loadImgs(ids=[img_id])[0]
     img_path = IMG_PATH + img_info['file_name']
     img = cv2.imread(img_path)
-    gt_ids = coco.getAnnIds(imgIds=[img_id])
+    gt_ids = coco.getAnnIds(imgIds=[img_id],catIds=catIds)
     gts = coco.loadAnns(gt_ids)
     gt_img = img.copy()
     for j, pred in enumerate(gts):
