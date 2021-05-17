@@ -80,7 +80,7 @@ def add_box(image, bbox, sc, cat_id):
 
 if __name__ == '__main__':
 
-  coco = coco.COCO(annFile)
+
     # self.images = self.coco.getImgIds()
   catIds = coco.getCatIds(catNms=['car','bus','truck'])
   img_ids = coco.getImgIds(catIds=catIds)
