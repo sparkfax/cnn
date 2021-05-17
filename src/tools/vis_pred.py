@@ -64,13 +64,15 @@ def add_box(image, bbox, sc, cat_id):
   return image
 
 if __name__ == '__main__':
-  dets = []
-  img_ids = coco.getImgIds()
-  num_images = len(img_ids)
-  for k in range(1, len(sys.argv)):
-    pred_path = sys.argv[k]
-    dets.append(coco.loadRes(pred_path))
-  # import pdb; pdb.set_trace()
+
+  coco = coco.COCO(annFile)
+    # self.images = self.coco.getImgIds()
+  catIds = coco.getCatIds(catNms=['car','bus','truck'])
+  img_ids = coco.getImgIds(catIds=catIds)
+  num_samples = len(img_ids)
+  save_dir='/kaggle/working/cnn/exp/ctdet/coco_dla_test/'
+  dets =coco.loadRes('{}/results.json'.format(save_dir))
+  imgs=[]
   for i, img_id in enumerate(img_ids):
     img_info = coco.loadImgs(ids=[img_id])[0]
     img_path = IMG_PATH + img_info['file_name']
@@ -82,6 +84,7 @@ if __name__ == '__main__':
       bbox = _coco_box_to_bbox(pred['bbox'])
       cat_id = pred['category_id']
       gt_img = add_box(gt_img, bbox, 0, cat_id)
+      imgs.append(gt_img)
     for k in range(len(dets)):
       pred_ids = dets[k].getAnnIds(imgIds=[img_id])
       preds = dets[k].loadAnns(pred_ids)
@@ -92,11 +95,14 @@ if __name__ == '__main__':
         cat_id = pred['category_id']
         if sc > 0.2:
           pred_img = add_box(pred_img, bbox, sc, cat_id)
-      cv2.imshow('pred{}'.format(k), pred_img)
-      # cv2.imwrite('vis/{}_pred{}.png'.format(i, k), pred_img)
-    cv2.imshow('gt', gt_img)
+      imgs.append(pred_img)
+
+    if i%3==0:
+        show_whale(imgs, per_row=2)
+        imgs=[]
+
     # cv2.imwrite('vis/{}_gt.png'.format(i), gt_img)
-    cv2.waitKey()
+
   # coco_eval.evaluate()
   # coco_eval.accumulate()
   # coco_eval.summarize()
