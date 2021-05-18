@@ -108,7 +108,7 @@ if __name__ == '__main__':
             cat_id = pred['category_id']
             if sc > 0.2:
               pred_img = add_box(pred_img, bbox, sc, cat_id)
-          imgs.append(pred_img)
+            imgs.append(pred_img)
 
         if i%3==0:
             show_whale(imgs, per_row=2)
