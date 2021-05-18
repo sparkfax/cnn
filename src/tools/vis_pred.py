@@ -97,7 +97,7 @@ if __name__ == '__main__':
     dets =coco.loadRes('{}/results.json'.format(save_dir))
     imgs=[]
     for i, img_id in enumerate(img_ids):
-        print(img_ids)
+        print(img_id)
         img_info = coco.loadImgs(ids=[img_id])[0]
         img_path = IMG_PATH + img_info['file_name']
         img = cv2.imread(img_path)
@@ -109,6 +109,7 @@ if __name__ == '__main__':
           bbox = _coco_box_to_bbox(pred['bbox'])
           cat_id = pred['category_id']
           gt_img = add_box(gt_img, bbox, 0, cat_id)
+        io.imshow(gt_img)
         imgs.append(gt_img)
         dts=dets.loadAnns(dets.getAnnIds(imgIds=img_id, catIds=catIds))
         for pred in dts:
@@ -117,6 +118,7 @@ if __name__ == '__main__':
             cat_id = pred['category_id']
             if sc > 0.2:
               pred_img = add_box(pred_img, bbox, sc, cat_id)
+        io.imshow(pred_img)
         imgs.append(pred_img)
 
         if i%3==0:
