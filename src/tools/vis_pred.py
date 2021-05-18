@@ -92,10 +92,12 @@ if __name__ == '__main__':
     catIds = coco.getCatIds(catNms=['car','bus','truck'])
     img_ids = coco.getImgIds(catIds=catIds)
     num_samples = len(img_ids)
+    print(num_samples)
     save_dir='/kaggle/working/cnn/exp/ctdet/coco_dla_test/'
     dets =coco.loadRes('{}/results.json'.format(save_dir))
     imgs=[]
     for i, img_id in enumerate(img_ids):
+        print(img_ids)
         img_info = coco.loadImgs(ids=[img_id])[0]
         img_path = IMG_PATH + img_info['file_name']
         img = cv2.imread(img_path)
@@ -118,6 +120,7 @@ if __name__ == '__main__':
         imgs.append(pred_img)
 
         if i%3==0:
+            print(len(imgs))
             show_whale(imgs, per_row=2)
             imgs=[]
 
