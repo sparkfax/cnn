@@ -101,14 +101,8 @@ if __name__ == '__main__':
           gt_img = add_box(gt_img, bbox, 0, cat_id)
           imgs.append(gt_img)
         dts=dets.loadAnns(dets.getAnnIds(imgIds=img_id, catIds=catIds))
-        for det in dts:
-            print(det)
-            print(det.getAnnIds(imgIds=[img_id]))
-        for k in range(len(dets)):
-          pred_ids = dets[k].getAnnIds(imgIds=[img_id])
-          preds = dets[k].loadAnns(pred_ids)
-          pred_img = img.copy()
-          for j, pred in enumerate(preds):
+        for pred in dts:
+            print(pred)
             bbox = _coco_box_to_bbox(pred['bbox'])
             sc = pred['score']
             cat_id = pred['category_id']
