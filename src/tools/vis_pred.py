@@ -107,16 +107,15 @@ if __name__ == '__main__':
           bbox = _coco_box_to_bbox(pred['bbox'])
           cat_id = pred['category_id']
           gt_img = add_box(gt_img, bbox, 0, cat_id)
-          imgs.append(gt_img)
+        imgs.append(gt_img)
         dts=dets.loadAnns(dets.getAnnIds(imgIds=img_id, catIds=catIds))
         for pred in dts:
-            print(pred)
             bbox = _coco_box_to_bbox(pred['bbox'])
             sc = pred['score']
             cat_id = pred['category_id']
             if sc > 0.2:
               pred_img = add_box(pred_img, bbox, sc, cat_id)
-            imgs.append(pred_img)
+        imgs.append(pred_img)
 
         if i%3==0:
             show_whale(imgs, per_row=2)
