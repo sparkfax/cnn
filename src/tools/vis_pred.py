@@ -110,7 +110,7 @@ if __name__ == '__main__':
           bbox = _coco_box_to_bbox(pred['bbox'])
           cat_id = pred['category_id']
           gt_img = add_box(gt_img, bbox, 0, cat_id)
-        io.imshow(gt_img)
+        print(len(gt_img))
         imgs.append(gt_img)
         dts=dets.loadAnns(dets.getAnnIds(imgIds=img_id, catIds=catIds))
         for pred in dts:
