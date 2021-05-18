@@ -12,42 +12,7 @@ def _coco_box_to_bbox(box):
   bbox = np.array([box[0], box[1], box[0] + box[2], box[1] + box[3]],
                   dtype=np.int32)
   return bbox
-CAT_NAMES = [
-    '__background__', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
-    'bus', 'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
-    'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse',
-    'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack',
-    'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee', 'skis',
-    'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove',
-    'skateboard', 'surfboard', 'tennis racket', 'bottle', 'wine glass',
-    'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich',
-    'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake',
-    'chair', 'couch', 'potted plant', 'bed', 'dining table', 'toilet', 'tv',
-    'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave',
-    'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
-    'scissors', 'teddy bear', 'hair drier', 'toothbrush']
-_cat_ids = [
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13,
-  14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
-  24, 25, 27, 28, 31, 32, 33, 34, 35, 36,
-  37, 38, 39, 40, 41, 42, 43, 44, 46, 47,
-  48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
-  58, 59, 60, 61, 62, 63, 64, 65, 67, 70,
-  72, 73, 74, 75, 76, 77, 78, 79, 80, 81,
-  82, 84, 85, 86, 87, 88, 89, 90
-]
-num_classes = 3
-_valid_ids = [3, 6, 8]
 
-_classes = {
-  ind + 1: cat_id for ind, cat_id in enumerate(_valid_ids)
-}
-_to_order = {cat_id: ind for ind, cat_id in enumerate(_valid_ids)}
-coco = coco.COCO(ANN_PATH)
-CAT_NAMES = [coco.loadCats([_classes[i + 1]])[0]['name'] \
-              for i in range(num_classes)]
-COLORS = [((np.random.random((3, )) * 0.6 + 0.4)*255).astype(np.uint8) \
-              for _ in range(num_classes)]
 
 
 def add_box(image, bbox, sc, cat_id):
@@ -79,42 +44,80 @@ def add_box(image, bbox, sc, cat_id):
   return image
 
 if __name__ == '__main__':
+    CAT_NAMES = [
+        '__background__', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
+        'bus', 'train', 'truck', 'boat', 'traffic light', 'fire hydrant',
+        'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse',
+        'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack',
+        'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee', 'skis',
+        'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove',
+        'skateboard', 'surfboard', 'tennis racket', 'bottle', 'wine glass',
+        'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich',
+        'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake',
+        'chair', 'couch', 'potted plant', 'bed', 'dining table', 'toilet', 'tv',
+        'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave',
+        'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
+        'scissors', 'teddy bear', 'hair drier', 'toothbrush']
+    _cat_ids = [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13,
+        14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+        24, 25, 27, 28, 31, 32, 33, 34, 35, 36,
+        37, 38, 39, 40, 41, 42, 43, 44, 46, 47,
+        48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+        58, 59, 60, 61, 62, 63, 64, 65, 67, 70,
+        72, 73, 74, 75, 76, 77, 78, 79, 80, 81,
+        82, 84, 85, 86, 87, 88, 89, 90
+    ]
+    num_classes = 3
+    _valid_ids = [3, 6, 8]
 
+    _classes = {
+        ind + 1: cat_id for ind, cat_id in enumerate(_valid_ids)
+    }
+    _to_order = {cat_id: ind for ind, cat_id in enumerate(_valid_ids)}
+    coco = coco.COCO(ANN_PATH)
+    CAT_NAMES = [coco.loadCats([_classes[i + 1]])[0]['name'] \
+                 for i in range(num_classes)]
+    COLORS = [((np.random.random((3, )) * 0.6 + 0.4)*255).astype(np.uint8) \
+              for _ in range(num_classes)]
 
     # self.images = self.coco.getImgIds()
-  catIds = coco.getCatIds(catNms=['car','bus','truck'])
-  img_ids = coco.getImgIds(catIds=catIds)
-  num_samples = len(img_ids)
-  save_dir='/kaggle/working/cnn/exp/ctdet/coco_dla_test/'
-  dets =coco.loadRes('{}/results.json'.format(save_dir))
-  imgs=[]
-  for i, img_id in enumerate(img_ids):
-    img_info = coco.loadImgs(ids=[img_id])[0]
-    img_path = IMG_PATH + img_info['file_name']
-    img = cv2.imread(img_path)
-    gt_ids = coco.getAnnIds(imgIds=[img_id],catIds=catIds)
-    gts = coco.loadAnns(gt_ids)
-    gt_img = img.copy()
-    for j, pred in enumerate(gts):
-      bbox = _coco_box_to_bbox(pred['bbox'])
-      cat_id = pred['category_id']
-      gt_img = add_box(gt_img, bbox, 0, cat_id)
-      imgs.append(gt_img)
-    for k in range(len(dets)):
-      pred_ids = dets[k].getAnnIds(imgIds=[img_id])
-      preds = dets[k].loadAnns(pred_ids)
-      pred_img = img.copy()
-      for j, pred in enumerate(preds):
-        bbox = _coco_box_to_bbox(pred['bbox'])
-        sc = pred['score']
-        cat_id = pred['category_id']
-        if sc > 0.2:
-          pred_img = add_box(pred_img, bbox, sc, cat_id)
-      imgs.append(pred_img)
+    catIds = coco.getCatIds(catNms=['car','bus','truck'])
+    img_ids = coco.getImgIds(catIds=catIds)
+    num_samples = len(img_ids)
+    save_dir='/kaggle/working/cnn/exp/ctdet/coco_dla_test/'
+    dets =coco.loadRes('{}/results.json'.format(save_dir))
+    imgs=[]
+    for i, img_id in enumerate(img_ids):
+        img_info = coco.loadImgs(ids=[img_id])[0]
+        img_path = IMG_PATH + img_info['file_name']
+        img = cv2.imread(img_path)
+        gt_ids = coco.getAnnIds(imgIds=[img_id],catIds=catIds)
+        gts = coco.loadAnns(gt_ids)
+        gt_img = img.copy()
+        for j, pred in enumerate(gts):
+          bbox = _coco_box_to_bbox(pred['bbox'])
+          cat_id = pred['category_id']
+          gt_img = add_box(gt_img, bbox, 0, cat_id)
+          imgs.append(gt_img)
+        for det in dets:
+            print(det)
+            print(det.getAnnIds(imgIds=[img_id]))
+        for k in range(len(dets)):
+          pred_ids = dets[k].getAnnIds(imgIds=[img_id])
+          preds = dets[k].loadAnns(pred_ids)
+          pred_img = img.copy()
+          for j, pred in enumerate(preds):
+            bbox = _coco_box_to_bbox(pred['bbox'])
+            sc = pred['score']
+            cat_id = pred['category_id']
+            if sc > 0.2:
+              pred_img = add_box(pred_img, bbox, sc, cat_id)
+          imgs.append(pred_img)
 
-    if i%3==0:
-        show_whale(imgs, per_row=2)
-        imgs=[]
+        if i%3==0:
+            show_whale(imgs, per_row=2)
+            imgs=[]
 
     # cv2.imwrite('vis/{}_gt.png'.format(i), gt_img)
 
