@@ -7,7 +7,7 @@ import pickle
 IMG_PATH = '/kaggle/input/coco-2017-dataset/coco2017/val2017/'
 ANN_PATH = '/kaggle/input/coco-2017-dataset/coco2017/annotations/instances_val2017.json'
 DEBUG = True
-
+import matplotlib.pyplot as plt
 def _coco_box_to_bbox(box):
   bbox = np.array([box[0], box[1], box[0] + box[2], box[1] + box[3]],
                   dtype=np.int32)
@@ -42,7 +42,14 @@ def add_box(image, bbox, sc, cat_id):
                 (bbox[2], bbox[3]),
                 color, 2)
   return image
-
+def show_whale(imgs, per_row=3):
+    n         = len(imgs)
+    rows      = (n + per_row - 1)//per_row
+    cols      = min(per_row, n)
+    fig, axes = plt.subplots(rows,cols, figsize=(24//per_row*cols,24//per_row*rows))
+    for ax in axes.flatten(): ax.axis('off')
+    for i,(img,ax) in enumerate(zip(imgs, axes.flatten())): ax.imshow(img)
+    plt.show()
 if __name__ == '__main__':
     CAT_NAMES = [
         '__background__', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
