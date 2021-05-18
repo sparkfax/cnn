@@ -100,7 +100,8 @@ if __name__ == '__main__':
           cat_id = pred['category_id']
           gt_img = add_box(gt_img, bbox, 0, cat_id)
           imgs.append(gt_img)
-        for det in dets:
+        dts=dets.loadAnns(dets.getAnnIds(imgIds=img_id, catIds=catIds))
+        for det in dts:
             print(det)
             print(det.getAnnIds(imgIds=[img_id]))
         for k in range(len(dets)):
