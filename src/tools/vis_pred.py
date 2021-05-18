@@ -95,6 +95,7 @@ if __name__ == '__main__':
         gt_ids = coco.getAnnIds(imgIds=[img_id],catIds=catIds)
         gts = coco.loadAnns(gt_ids)
         gt_img = img.copy()
+        pred_img = img.copy()
         for j, pred in enumerate(gts):
           bbox = _coco_box_to_bbox(pred['bbox'])
           cat_id = pred['category_id']
