@@ -123,11 +123,11 @@ if __name__ == '__main__':
         imgs.append(pred_img)
 
         if i%3==0:
-            print(len(imgs))
             show_whale(imgs, per_row=2)
             imgs=[]
 
-    # cv2.imwrite('vis/{}_gt.png'.format(i), gt_img)
+        cv2.imwrite('vis/{}_gt.png'.format(img_info['file_name']), gt_img)
+        cv2.imwrite('vis/{}_pred.png'.format(img_info['file_name']), pred_img)
 
   # coco_eval.evaluate()
   # coco_eval.accumulate()
