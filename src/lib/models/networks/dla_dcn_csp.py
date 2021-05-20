@@ -66,9 +66,9 @@ class C3(nn.Module):
         c_ = int(c2 * e)  # hidden channels
         self.cv1 = Conv(c1, c_, 1, 1)
         self.cv2 = Conv(c1, c_, 1, 1)
-        self.cv3 = Conv(2 * c_, c2, 1)  # act=FReLU(c2)
         self.m = nn.Sequential(*[C3Bottleneck(c_, c_, shortcut, g, e=1.0) for _ in range(n)])
         # self.m = nn.Sequential(*[CrossConv(c_, c_, 3, 1, g, 1.0, shortcut) for _ in range(n)])
+        self.cv3 = Conv(2 * c_, c2, 1)  # act=FReLU(c2)
 
     def forward(self, x, residual=None):
         #residual not use
@@ -200,8 +200,11 @@ class Root(nn.Module):
         self.bn = nn.BatchNorm2d(out_channels, momentum=BN_MOMENTUM)
         self.relu = nn.ReLU(inplace=True)
         self.residual = residual
+        self.in_channels=in_channels
+        self.out_channels=out_channels
 
     def forward(self, *x):
+        print(self.in_channels, self.out_channels)
         children = x
         x = self.conv(torch.cat(x, 1))
         x = self.bn(x)
@@ -217,6 +220,8 @@ class Tree(nn.Module):
                  level_root=False, root_dim=0, root_kernel_size=1,
                  dilation=1, root_residual=False):
         super(Tree, self).__init__()
+        self.in_channels=in_channels
+        self.out_channels=out_channels
         if root_dim == 0:
             root_dim = 2 * out_channels
         if level_root:
@@ -253,6 +258,7 @@ class Tree(nn.Module):
             )
 
     def forward(self, x, residual=None, children=None):
+        print(self.in_channels, self.out_channels,self.levels,self.level_root, self.root_dim)
         children = [] if children is None else children
         bottom = self.downsample(x) if self.downsample else x
         residual = self.project(bottom) if self.project else bottom
