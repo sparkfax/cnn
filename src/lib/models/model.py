@@ -12,11 +12,13 @@ from .networks.dlav0 import get_pose_net as get_dlav0
 from .networks.pose_dla_dcn import get_pose_net as get_dla_dcn
 from .networks.resnet_dcn import get_pose_net as get_pose_net_dcn
 from .networks.large_hourglass import get_large_hourglass_net
+from .networks.dla_dcn_csp import get_dla_csp as get_dla_csp
 
 _model_factory = {
   'res': get_pose_net, # default Resnet with deconv
   'dlav0': get_dlav0, # default DLAup
   'dla': get_dla_dcn,
+  'dlacsp': get_dla_csp,
   'resdcn': get_pose_net_dcn,
   'hourglass': get_large_hourglass_net,
 }
