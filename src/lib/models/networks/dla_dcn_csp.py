@@ -268,6 +268,7 @@ class Tree(nn.Module):
         x1 = self.tree1(x, residual)
         if self.levels == 1:
             x2 = self.tree2(x1)
+            print(x1.shape, x2.shape)
             x = self.root(x2, x1, *children)
         else:
             children.append(x1)
@@ -276,8 +277,6 @@ class Tree(nn.Module):
 
 
 class DLA(nn.Module):
-    # def __init__(self, levels, channels, num_classes=1000,
-    #              block=BasicBlock, residual_root=False, linear_root=False):
     def __init__(self, levels, channels, num_classes=1000,
                  block=BasicBlock, residual_root=False, linear_root=False):
         super(DLA, self).__init__()
