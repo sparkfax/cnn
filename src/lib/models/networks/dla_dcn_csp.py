@@ -207,7 +207,7 @@ class Root(nn.Module):
         self.out_channels=out_channels
 
     def forward(self, *x):
-        print(self.in_channels, self.out_channels)
+        # print(self.in_channels, self.out_channels)
         children = x
         x = self.conv(torch.cat(x, 1))
         x = self.bn(x)
@@ -261,7 +261,7 @@ class Tree(nn.Module):
             )
 
     def forward(self, x, residual=None, children=None):
-        print(self.in_channels, self.out_channels,self.levels,self.level_root, self.root_dim)
+        # print(self.in_channels, self.out_channels,self.levels,self.level_root, self.root_dim)
         children = [] if children is None else children
         bottom = self.downsample(x) if self.downsample else x
         residual = self.project(bottom) if self.project else bottom
@@ -271,7 +271,7 @@ class Tree(nn.Module):
         x1 = self.tree1(x, residual)
         if self.levels == 1:
             x2 = self.tree2(x1)
-            print(x1.shape, x2.shape)
+            # print(x1.shape, x2.shape)
             x = self.root(x2, x1, *children)
         else:
             children.append(x1)
