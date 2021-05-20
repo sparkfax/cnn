@@ -258,7 +258,7 @@ class Tree(nn.Module):
         residual = self.project(bottom) if self.project else bottom
         if self.level_root:
             children.append(bottom)
-        print(x.shape, residual.shape, children.shape)
+        # print(x.shape, residual.shape, len(children))
         x1 = self.tree1(x, residual)
         if self.levels == 1:
             x2 = self.tree2(x1)
