@@ -33,10 +33,10 @@ def autopad(k, p=None):  # kernel, padding
     if p is None:
         p = k // 2 if isinstance(k, int) else [x // 2 for x in k]  # auto-pad
     return p
-class Bottleneck(nn.Module):
+class C3Bottleneck(nn.Module):
     # Standard bottleneck
     def __init__(self, c1, c2, shortcut=True, g=1, e=0.5):  # ch_in, ch_out, shortcut, groups, expansion
-        super(Bottleneck, self).__init__()
+        super(C3Bottleneck, self).__init__()
         c_ = int(c2 * e)  # hidden channels
         self.cv1 = Conv(c1, c_, 1, 1)
         self.cv2 = Conv(c_, c2, 3, 1, g=g)
@@ -67,10 +67,11 @@ class C3(nn.Module):
         self.cv1 = Conv(c1, c_, 1, 1)
         self.cv2 = Conv(c1, c_, 1, 1)
         self.cv3 = Conv(2 * c_, c2, 1)  # act=FReLU(c2)
-        self.m = nn.Sequential(*[Bottleneck(c_, c_, shortcut, g, e=1.0) for _ in range(n)])
+        self.m = nn.Sequential(*[C3Bottleneck(c_, c_, shortcut, g, e=1.0) for _ in range(n)])
         # self.m = nn.Sequential(*[CrossConv(c_, c_, 3, 1, g, 1.0, shortcut) for _ in range(n)])
 
-    def forward(self, x):
+    def forward(self, x, residual=None):
+        #residual not use
         return self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
 # ** code from yolo5
 
@@ -105,45 +106,45 @@ class BasicBlock(nn.Module):
         return out
 
 
-# class Bottleneck(nn.Module):
-#     expansion = 2
-#
-#     def __init__(self, inplanes, planes, stride=1, dilation=1):
-#         super(Bottleneck, self).__init__()
-#         expansion = Bottleneck.expansion
-#         bottle_planes = planes // expansion
-#         self.conv1 = nn.Conv2d(inplanes, bottle_planes,
-#                                kernel_size=1, bias=False)
-#         self.bn1 = nn.BatchNorm2d(bottle_planes, momentum=BN_MOMENTUM)
-#         self.conv2 = nn.Conv2d(bottle_planes, bottle_planes, kernel_size=3,
-#                                stride=stride, padding=dilation,
-#                                bias=False, dilation=dilation)
-#         self.bn2 = nn.BatchNorm2d(bottle_planes, momentum=BN_MOMENTUM)
-#         self.conv3 = nn.Conv2d(bottle_planes, planes,
-#                                kernel_size=1, bias=False)
-#         self.bn3 = nn.BatchNorm2d(planes, momentum=BN_MOMENTUM)
-#         self.relu = nn.ReLU(inplace=True)
-#         self.stride = stride
-#
-#     def forward(self, x, residual=None):
-#         if residual is None:
-#             residual = x
-#
-#         out = self.conv1(x)
-#         out = self.bn1(out)
-#         out = self.relu(out)
-#
-#         out = self.conv2(out)
-#         out = self.bn2(out)
-#         out = self.relu(out)
-#
-#         out = self.conv3(out)
-#         out = self.bn3(out)
-#
-#         out += residual
-#         out = self.relu(out)
-#
-#         return out
+class Bottleneck(nn.Module):
+    expansion = 2
+
+    def __init__(self, inplanes, planes, stride=1, dilation=1):
+        super(Bottleneck, self).__init__()
+        expansion = Bottleneck.expansion
+        bottle_planes = planes // expansion
+        self.conv1 = nn.Conv2d(inplanes, bottle_planes,
+                               kernel_size=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(bottle_planes, momentum=BN_MOMENTUM)
+        self.conv2 = nn.Conv2d(bottle_planes, bottle_planes, kernel_size=3,
+                               stride=stride, padding=dilation,
+                               bias=False, dilation=dilation)
+        self.bn2 = nn.BatchNorm2d(bottle_planes, momentum=BN_MOMENTUM)
+        self.conv3 = nn.Conv2d(bottle_planes, planes,
+                               kernel_size=1, bias=False)
+        self.bn3 = nn.BatchNorm2d(planes, momentum=BN_MOMENTUM)
+        self.relu = nn.ReLU(inplace=True)
+        self.stride = stride
+
+    def forward(self, x, residual=None):
+        if residual is None:
+            residual = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+
+        out = self.conv2(out)
+        out = self.bn2(out)
+        out = self.relu(out)
+
+        out = self.conv3(out)
+        out = self.bn3(out)
+
+        out += residual
+        out = self.relu(out)
+
+        return out
 
 
 class BottleneckX(nn.Module):
@@ -257,6 +258,7 @@ class Tree(nn.Module):
         residual = self.project(bottom) if self.project else bottom
         if self.level_root:
             children.append(bottom)
+        print(x.shape, residual.shape, children.shape)
         x1 = self.tree1(x, residual)
         if self.levels == 1:
             x2 = self.tree2(x1)
