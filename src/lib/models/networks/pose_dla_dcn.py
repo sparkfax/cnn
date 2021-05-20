@@ -219,6 +219,7 @@ class Tree(nn.Module):
         x1 = self.tree1(x, residual)
         if self.levels == 1:
             x2 = self.tree2(x1)
+            print(x1.shape, x2.shape)
             x = self.root(x2, x1, *children)
         else:
             children.append(x1)
