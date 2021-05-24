@@ -86,7 +86,7 @@ def prefetch_test(opt):
         t, tm = avg_time_stats[t])
     bar.next()
   bar.finish()
-  dataset.run_eval(results, opt.save_dir)
+  dataset.run_eval(results, opt.save_dir,opt.catNms)
 
 def test(opt):
   os.environ['CUDA_VISIBLE_DEVICES'] = opt.gpus_str
