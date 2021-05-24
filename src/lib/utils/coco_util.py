@@ -57,7 +57,7 @@ class COCOeval:
     # Data, paper, and tutorials available at:  http://mscoco.org/
     # Code written by Piotr Dollar and Tsung-Yi Lin, 2015.
     # Licensed under the Simplified BSD License [see coco/license.txt]
-    def __init__(self, cocoGt=None, cocoDt=None, iouType='segm'):
+    def __init__(self, cocoGt=None, cocoDt=None, iouType='segm',catNms=None):
         '''
         Initialize CocoEval using coco APIs for gt and dt
         :param cocoGt: coco object with ground truth annotations
@@ -77,8 +77,12 @@ class COCOeval:
         self.stats = []                     # result summarization
         self.ious = {}                      # ious between all gts and dts
         if not cocoGt is None:
-            self.params.catIds = sorted(cocoGt.getCatIds(catNms=['car','bus','truck']))
-            self.params.imgIds = sorted(cocoGt.getImgIds(catIds=self.params.catIds))
+            if not catNms is None:
+                self.params.catIds = sorted(cocoGt.getCatIds(catNms))
+                self.params.imgIds = sorted(cocoGt.getImgIds(catIds=self.params.catIds))
+            else:
+                self.params.imgIds = sorted(cocoGt.getImgIds())
+                self.params.catIds = sorted(cocoGt.getCatIds())
             self.params.useCats=True
             print(len(self.params.imgIds))
 
