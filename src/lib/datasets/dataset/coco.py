@@ -119,7 +119,7 @@ class COCO(data.Dataset):
     json.dump(self.convert_eval_format(results), 
                 open('{}/results.json'.format(save_dir), 'w'))
   
-  def run_eval(self, results, save_dir):
+  def run_eval(self, results, save_dir,catNms):
     # result_json = os.path.join(save_dir, "results.json")
     # detections  = self.convert_eval_format(results)
     # json.dump(detections, open(result_json, "w"))
@@ -127,7 +127,7 @@ class COCO(data.Dataset):
     coco_dets = self.coco.loadRes('{}/results.json'.format(save_dir))
     # coco_eval = COCOeval(self.coco, coco_dets, "bbox")
     #change to only evalue 3 class
-    coco_eval = COCOeval(self.coco, coco_dets, "bbox",None)
+    coco_eval = COCOeval(self.coco, coco_dets, "bbox",catNms)
     coco_eval.evaluate()
     coco_eval.accumulate()
     coco_eval.summarize()

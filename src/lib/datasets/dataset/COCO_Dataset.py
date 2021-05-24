@@ -119,7 +119,7 @@ class COCO_Dataset(data.Dataset):
     def __len__(self):
         return self.num_samples
 
-    def save_results(self, results, save_dir):
+    def save_results(self, results, save_dir,catNms):
         json.dump(self.convert_eval_format(results),
                   open('{}/results.json'.format(save_dir), 'w'))
 
