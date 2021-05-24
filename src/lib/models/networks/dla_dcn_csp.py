@@ -360,7 +360,7 @@ class DLA(nn.Module):
         self.fc = nn.Conv2d(
             self.channels[-1], num_classes,
             kernel_size=1, stride=1, padding=0, bias=True)
-        self.load_state_dict(model_weights)
+        self.load_state_dict(model_weights,strict=False )
         # self.fc = fc
 
 
