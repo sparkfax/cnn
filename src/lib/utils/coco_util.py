@@ -77,10 +77,10 @@ class COCOeval:
         self.stats = []                     # result summarization
         self.ious = {}                      # ious between all gts and dts
         if not cocoGt is None:
-            self.params.imgIds = sorted(cocoGt.getImgIds())
             self.params.catIds = sorted(cocoGt.getCatIds(catNms=['car','bus','truck']))
+            self.params.imgIds = sorted(cocoGt.getImgIds(catIds=self.params.catIds))
             self.params.useCats=True
-            print(self.params.catIds)
+            print(len(self.params.imgIds))
 
 
     def _prepare(self):
