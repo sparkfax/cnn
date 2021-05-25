@@ -544,7 +544,7 @@ class DLASeg(nn.Module):
 
 def get_dla_csp(num_layers, heads, head_conv=256, down_ratio=4):
   model = DLASeg('dla{}'.format(num_layers), heads,
-                 pretrained=True,
+                 pretrained=False,
                  down_ratio=down_ratio,
                  final_kernel=1,
                  last_level=5,
