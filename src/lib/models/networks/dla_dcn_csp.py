@@ -78,7 +78,9 @@ class C3(nn.Module):
         #residual not use
             return self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
         else:
-            return self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x), self.cv2(residual)), dim=1))
+            y1=self.cv2(x)
+            y2=self.cv2(residual)
+            return self.cv3(torch.cat((self.m(self.cv1(x)), y1+y2), dim=1))
 # ** code from yolo5
 
 class BasicBlock(nn.Module):
