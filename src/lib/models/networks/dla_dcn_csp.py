@@ -83,6 +83,8 @@ class C3(nn.Module):
 #             y+=residual
 
 #             y=self.m(self.cv1(x))
+            print(x.shape, residual.shape)
+    
             residual=self.cv2(residual)
             y=self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x),residual), dim=1))
 
