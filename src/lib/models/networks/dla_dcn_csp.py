@@ -79,11 +79,11 @@ class C3(nn.Module):
         #residual not use
             return self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
         else:
-#             y=self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
-#             y+=residual
-            y=self.m(self.cv1(x))
+            y=self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
             y+=residual
-            y=self.cv3(torch.cat((y, self.cv2(x)), dim=1))
+#             y=self.m(self.cv1(x))
+#             y+=residual
+#             y=self.cv3(torch.cat((y, self.cv2(x)), dim=1))
 #             y=self.act(y)  #loss drop slow
             return y
 # ** code from yolo5
@@ -265,9 +265,9 @@ class Tree(nn.Module):
             self.downsample = nn.MaxPool2d(stride, stride=stride)
         if in_channels != out_channels:
             self.project = nn.Sequential(
-                nn.Conv2d(in_channels, out_channels//2,
+                nn.Conv2d(in_channels, out_channels,
                           kernel_size=1, stride=1, bias=False),
-                nn.BatchNorm2d(out_channels//2, momentum=BN_MOMENTUM)
+                nn.BatchNorm2d(out_channels, momentum=BN_MOMENTUM)
             )
 
     def forward(self, x, residual=None, children=None):
