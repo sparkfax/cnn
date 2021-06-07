@@ -82,7 +82,7 @@ class C3(nn.Module):
 #             y=self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
 #             y+=residual
             y=self.m(self.cv1(x))
-            y+=self.cv1(residual)
+            y+=residual
             y=self.cv3(torch.cat((y, self.cv2(x)), dim=1))
 #             y=self.act(y)  #loss drop slow
             return y
