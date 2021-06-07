@@ -116,7 +116,7 @@ class CTDetDataset(data.Dataset):
         ct_int = ct.astype(np.int32)
         draw_gaussian(hm[cls_id], ct_int, radius)
         wh[k] = 1. * w, 1. * h
-        ind[k] = ct_int[1] * output_w + ct_int[0]
+        ind[k] = ct_int[1] * output_w + ct_int[0] #Ind是中心点相对于原图的位置，相当于把一张图片像素拉成一列，目标中心点坐标在第几个位置。
         reg[k] = ct - ct_int
         reg_mask[k] = 1
         cat_spec_wh[k, cls_id * 2: cls_id * 2 + 2] = wh[k]
