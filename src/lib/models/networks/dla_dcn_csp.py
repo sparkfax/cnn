@@ -72,15 +72,20 @@ class C3(nn.Module):
         self.m = nn.Sequential(*[C3Bottleneck(c_, c_, shortcut, g, e=1.0) for _ in range(n)])
         # self.m = nn.Sequential(*[CrossConv(c_, c_, 3, 1, g, 1.0, shortcut) for _ in range(n)])
         self.cv3 = Conv(2 * c_, c2, 1)  # act=FReLU(c2)
+        self.act = nn.SiLU() 
 
     def forward(self, x, residual=None):
         if residual is None:
         #residual not use
             return self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
         else:
-            y1=self.cv2(x)
-            y2=self.cv2(residual)
-            return self.cv3(torch.cat((self.m(self.cv1(x)), y1+y2), dim=1))
+#             y=self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
+#             y+=residual
+            y=self.m(self.cv1(x))
+            y+=self.cv1(residual)
+            y=self.cv3(torch.cat((y, self.cv2(x)), dim=1))
+#             y=self.act(y)  #loss drop slow
+            return y
 # ** code from yolo5
 
 class BasicBlock(nn.Module):
@@ -260,9 +265,9 @@ class Tree(nn.Module):
             self.downsample = nn.MaxPool2d(stride, stride=stride)
         if in_channels != out_channels:
             self.project = nn.Sequential(
-                nn.Conv2d(in_channels, out_channels,
+                nn.Conv2d(in_channels, out_channels*0.5,
                           kernel_size=1, stride=1, bias=False),
-                nn.BatchNorm2d(out_channels, momentum=BN_MOMENTUM)
+                nn.BatchNorm2d(out_channels*0.5, momentum=BN_MOMENTUM)
             )
 
     def forward(self, x, residual=None, children=None):
