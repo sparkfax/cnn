@@ -79,9 +79,12 @@ class C3(nn.Module):
         #residual not use
             return self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
         else:
-            y=self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
+#             y=self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
+#             y+=residual
+            y=self.m(self.cv1(x))
             y+=residual
-            y=self.act(y)
+            y=self.cv3(torch.cat((y, self.cv2(x)), dim=1))
+#             y=self.act(y)  #loss drop slow
             return y
 # ** code from yolo5
 
