@@ -265,9 +265,9 @@ class Tree(nn.Module):
             self.downsample = nn.MaxPool2d(stride, stride=stride)
         if in_channels != out_channels:
             self.project = nn.Sequential(
-                nn.Conv2d(in_channels, out_channels,
+                nn.Conv2d(in_channels, out_channels*0.5,
                           kernel_size=1, stride=1, bias=False),
-                nn.BatchNorm2d(out_channels, momentum=BN_MOMENTUM)
+                nn.BatchNorm2d(out_channels*0.5, momentum=BN_MOMENTUM)
             )
 
     def forward(self, x, residual=None, children=None):
