@@ -232,6 +232,7 @@ class C3_Root(nn.Module):
 
     def forward(self, *x):
         children = x
+        x=torch.cat(x, 1)
         x=self.cv3(torch.cat((self.m(self.cv1(x)), self.cv2(x)), dim=1))
         if self.residual:
             x += children[0]
