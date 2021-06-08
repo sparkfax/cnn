@@ -20,7 +20,7 @@ _model_factory = {
   'dlav0': get_dlav0, # default DLAup
   'dla': get_dla_dcn,
   'dlacsp': get_dla_csp,
-  'dlacspv2': get_dla_csp_v2,
+  'dlaC3Root': get_dla_csp_v2,
   'resdcn': get_pose_net_dcn,
   'hourglass': get_large_hourglass_net,
 }
