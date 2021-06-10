@@ -562,5 +562,6 @@ def get_dla_csp(num_layers, heads, head_conv=256, down_ratio=4):
                  final_kernel=1,
                  last_level=5,
                  head_conv=head_conv)
+  print(model)
   return model
 
