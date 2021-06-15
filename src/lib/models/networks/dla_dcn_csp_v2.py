@@ -206,6 +206,28 @@ class BottleneckX(nn.Module):
 
         return out
 
+class Root(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size, residual):
+        super(Root, self).__init__()
+        self.conv = nn.Conv2d(
+            in_channels, out_channels, 1,
+            stride=1, bias=False, padding=(kernel_size - 1) // 2)
+        self.bn = nn.BatchNorm2d(out_channels, momentum=BN_MOMENTUM)
+        self.relu = nn.ReLU(inplace=True)
+        self.residual = residual
+        self.in_channels=in_channels
+        self.out_channels=out_channels
+
+    def forward(self, *x):
+        # print(self.in_channels, self.out_channels)
+        children = x
+        x = self.conv(torch.cat(x, 1))
+        x = self.bn(x)
+        if self.residual:
+            x += children[0]
+        x = self.relu(x)
+
+        return x
 
 class C3_Root(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, residual,stride=1, dilation=1, shortcut=True, g=1, e=0.5):
@@ -258,7 +280,7 @@ class C3_Root(nn.Module):
 
 
 class Tree(nn.Module):
-    def __init__(self, levels, block, in_channels, out_channels, stride=1,
+    def __init__(self, levels, block,c3, in_channels, out_channels, stride=1,
                  level_root=False, root_dim=0, root_kernel_size=1,
                  dilation=1, root_residual=False):
         super(Tree, self).__init__()
@@ -271,19 +293,19 @@ class Tree(nn.Module):
         if levels == 1:
             self.tree1 = block(in_channels, out_channels, stride,
                                dilation=dilation)
-            self.tree2 = block(out_channels, out_channels, 1,
+            self.tree2 = c3(out_channels, out_channels, 1,
                                dilation=dilation)
         else:
-            self.tree1 = Tree(levels - 1, block, in_channels, out_channels,
+            self.tree1 = Tree(levels - 1, block,c3, in_channels, out_channels,
                               stride, root_dim=0,
                               root_kernel_size=root_kernel_size,
                               dilation=dilation, root_residual=root_residual)
-            self.tree2 = Tree(levels - 1, block, out_channels, out_channels,
+            self.tree2 = Tree(levels - 1, block,c3, out_channels, out_channels,
                               root_dim=root_dim + out_channels,
                               root_kernel_size=root_kernel_size,
                               dilation=dilation, root_residual=root_residual)
         if levels == 1:
-            self.root = C3_Root(root_dim, out_channels, root_kernel_size,
+            self.root = Root(root_dim, out_channels, root_kernel_size,
                              root_residual)
         self.level_root = level_root
         self.root_dim = root_dim
@@ -320,7 +342,7 @@ class Tree(nn.Module):
 
 class DLA(nn.Module):
     def __init__(self, levels, channels, num_classes=1000,
-                 block=BasicBlock, residual_root=False, linear_root=False):
+                 block=BasicBlock,c3=C3, residual_root=False, linear_root=False):
         super(DLA, self).__init__()
         self.channels = channels
         self.num_classes = num_classes
@@ -333,14 +355,14 @@ class DLA(nn.Module):
             channels[0], channels[0], levels[0])
         self.level1 = self._make_conv_level(
             channels[0], channels[1], levels[1], stride=2)
-        self.level2 = Tree(levels[2], block, channels[1], channels[2], 2,
+        self.level2 = Tree(levels[2], block,c3, channels[1], channels[2], 2,
                            level_root=False,
                            root_residual=residual_root)
-        self.level3 = Tree(levels[3], block, channels[2], channels[3], 2,
+        self.level3 = Tree(levels[3], block,c3, channels[2], channels[3], 2,
                            level_root=True, root_residual=residual_root)
-        self.level4 = Tree(levels[4], block, channels[3], channels[4], 2,
+        self.level4 = Tree(levels[4], block,c3, channels[3], channels[4], 2,
                            level_root=True, root_residual=residual_root)
-        self.level5 = Tree(levels[5], block, channels[4], channels[5], 2,
+        self.level5 = Tree(levels[5], block,c3, channels[4], channels[5], 2,
                            level_root=True, root_residual=residual_root)
 
         # for m in self.modules():
@@ -406,7 +428,7 @@ class DLA(nn.Module):
 def dla34(pretrained=True, **kwargs):  # DLA-34
     model = DLA([1, 1, 1, 2, 2, 1],
                 [16, 32, 64, 128, 256, 512],
-                block=BasicBlock, **kwargs)
+                block=BasicBlock,c3=C3, **kwargs)
     if pretrained:
         model.load_pretrained_model(data='imagenet', name='dla34', hash='ba72cf86')
     return model
