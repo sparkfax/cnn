@@ -1,0 +1,19 @@
+name: packnet-sfm
+channels:
+  - conda-forge
+  - travis
+  - pytorch
+dependencies:
+  - python=3.7
+  - numpy
+  - tqdm
+  - cudatoolkit
+  - pytorch
+  - torchvision
+  - yacs
+  - matplotlib
+  - termcolor
+  - opencv
+  - pip:
+      - wandb
+      - horovod
